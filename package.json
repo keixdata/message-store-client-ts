@@ -1,0 +1,27 @@
+{
+  "name": "event-store-client-ts",
+  "version": "1.0.0",
+  "description": "An Event Store client typescript implementation using gRPC",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keixdata/event-store-client-ts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/keixdata/event-store-client-ts/issues"
+  },
+  "homepage": "https://github.com/keixdata/event-store-client-ts#readme",
+  "dependencies": {
+    "grpc": "^1.24.2",
+    "msgpack5": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/msgpack5": "^3.4.1",
+    "typescript": "^3.7.5"
+  }
+}
