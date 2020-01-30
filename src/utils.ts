@@ -10,3 +10,6 @@ export function serialize(obj: {}) {
 export function deserialize(buf: Buffer) {
   return pack.decode(buf);
 }
+
+export const delay = async (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
