@@ -14,7 +14,7 @@ const client = new Client(host, credentials.createInsecure());
 
 export function sendCommand(options: SendCommandOptions, callback) {
   client.makeUnaryRequest(
-    "/EventStore/SendCommand",
+    "/MessageStore/SendCommand",
     serialize,
     deserialize,
     options,
@@ -26,7 +26,7 @@ export function sendCommand(options: SendCommandOptions, callback) {
 
 export function emitEvent(options: EmitEventOptions, callback) {
   client.makeUnaryRequest(
-    "/EventStore/EmitEvent",
+    "/MessageStore/EmitEvent",
     serialize,
     deserialize,
     options,
@@ -38,7 +38,7 @@ export function emitEvent(options: EmitEventOptions, callback) {
 
 export async function subscribe(options: SubscriberOptions, callback) {
   const stream = client.makeServerStreamRequest<SubscriberOptions, Message>(
-    "/EventStore/Subscribe",
+    "/MessageStore/Subscribe",
     serialize,
     deserialize,
     options
