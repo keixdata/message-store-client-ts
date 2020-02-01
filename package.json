@@ -4,7 +4,8 @@
   "description": "An Message Store client typescript implementation using gRPC",
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,8 @@
   "homepage": "https://github.com/keixdata/message-store-client-ts#readme",
   "dependencies": {
     "grpc": "^1.24.2",
-    "msgpack5": "^4.2.1"
+    "msgpack5": "^4.2.1",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@types/jest": "^25.1.1",
