@@ -21,7 +21,10 @@
     "msgpack5": "^4.2.1"
   },
   "devDependencies": {
+    "@types/jest": "^25.1.1",
     "@types/msgpack5": "^3.4.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.1.0",
     "typescript": "^3.7.5"
   }
 }
