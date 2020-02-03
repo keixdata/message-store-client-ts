@@ -16,11 +16,15 @@ const host = process.env.HOST ?? `0.0.0.0:${port}`;
 
 const client = new Client(host, credentials.createInsecure());
 
-function promisify<T>(...args): Promise<T> {
+function promisify<T>(
+  ...args: [string, (opb: {}) => Buffer, (buf: Buffer) => {}, {}, null, null]
+): Promise<T> {
   return new Promise(function(resolve, reject) {
-    client.makeUnaryRequest(...args, (err: Error, res: T) =>
-      err != null ? reject(err) : resolve(res)
-    );
+    const [a, b, c, d, e, f] = args;
+    const callback = (err: Error, res: T) =>
+      err != null ? reject(err) : resolve(res);
+
+    client.makeUnaryRequest(a, b, c, d, e, f, callback);
   });
 }
 

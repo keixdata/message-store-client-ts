@@ -3,8 +3,8 @@ import {
   pushMessage,
   getStreamMessages,
   setupMessageStore
-} from "../src/test_utils";
-import { sendCommand } from "../src";
+} from "../test_utils";
+import { sendCommand } from "..";
 
 test("the mocked message store adds messages to the streams and calculate the positions", () => {
   setupMessageStore([
