@@ -14,6 +14,14 @@ export interface EmitEventOptions {
   id?: string;
   expectedVersion?: number;
 }
+
+export type Projector<State, Msg> = (prev: State, next: Msg) => State;
+export type Handler<I = {}> = (next: I) => Promise<any> | void;
+
+export interface ReadLastMessageOptions {
+  streamName: string;
+}
+
 export interface SubscriberOptions {
   streamName: string;
   subscriberId?: string;
@@ -24,7 +32,12 @@ export interface SubscriberOptions {
   positionUpdateInterval?: number;
   idleUpdateInterval?: number;
 }
-export interface Message<Type = "", Data = {}, Metadata = { traceId: string }> {
+export interface ProjectorOptions {
+  streamName: string;
+  untilPosition?: number;
+}
+
+export type Message<Type = "", Data = {}, Metadata = { traceId: string }> = {
   id: string;
   stream_name: string;
   type: Type;
@@ -33,4 +46,4 @@ export interface Message<Type = "", Data = {}, Metadata = { traceId: string }> {
   data: Data;
   metadata: Metadata;
   time: Date;
-}
+};
