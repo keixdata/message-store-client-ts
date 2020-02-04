@@ -1,5 +1,16 @@
-import { Message, SendCommandOptions, EmitEventOptions } from "./types";
+import {
+  Message,
+  SendCommandOptions,
+  EmitEventOptions,
+  SubscriberOptions,
+  Handler,
+  ProjectorOptions,
+  Projector,
+  ReadLastMessageOptions
+} from "./types";
 import { v4 } from "uuid";
+import { map, flatten, sortBy } from "lodash";
+import waitForExpect from "wait-for-expect";
 
 let messages = {};
 let globalPosition = 0;
@@ -23,7 +34,16 @@ export function pushMessage(message: PartialMessage) {
 }
 
 export function getStreamMessages(streamName: string): Message[] {
-  return messages[streamName];
+  const isCategory = streamName.indexOf("-") < 0;
+
+  if (isCategory) {
+    const streams = Object.keys(messages).filter(stream =>
+      stream.startsWith(streamName)
+    );
+    return sortBy(flatten(map(streams, k => messages[k])), ["global_position"]);
+  } else {
+    return messages[streamName] ?? [];
+  }
 }
 
 export function setupMessageStore(initialMessages: PartialMessage[] = []) {
@@ -58,8 +78,55 @@ export function mockMessageStore() {
         stream_name: fakeStreamName
       });
       return Promise.resolve(pos);
+    },
+    subscribe(options: SubscriberOptions, handler: Handler<any>) {
+      let position = options.lastPosition ?? 0;
+      let numberOfMessageRead = 0;
+      function tick() {
+        const messageList = getStreamMessages(options.streamName);
+        const lastIndex = messageList.length - 1;
+        if (messageList.length > numberOfMessageRead) {
+          const newMessages = messageList.slice(position);
+          numberOfMessageRead += newMessages.length;
+          position = lastIndex;
+          newMessages.forEach(handler);
+        }
+      }
+      tick();
+      const interval = setInterval(() => tick(), 150);
+      return () => clearInterval(interval);
+    },
+    readLastMessage(options: ReadLastMessageOptions) {
+      const messages = getStreamMessages(options.streamName);
+      return messages.length > 0 ? messages[messages.length - 1] : null;
+    },
+    runProjector(
+      options: ProjectorOptions,
+      reducer: Projector<any, any>,
+      initialValue: any
+    ) {
+      const messagesList = getStreamMessages(options.streamName);
+      return Promise.resolve(messagesList.reduce(reducer, initialValue));
     }
   }));
 }
 
-mockMessageStore();
+export async function expectIdempotency(
+  run: () => Promise<() => void>,
+  expectation: () => void
+) {
+  let stop = await run();
+  await waitForExpect(expectation);
+  stop();
+
+  stop = await run();
+  await waitForExpect(expectation);
+  stop();
+}
+
+// Mock the message store if running in test mode.
+if (process.env.NODE_ENV === "test") {
+  mockMessageStore();
+}
+
+export { waitForExpect };

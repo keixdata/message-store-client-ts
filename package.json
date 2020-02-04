@@ -1,6 +1,6 @@
 {
   "name": "@keix/message-store-client",
-  "version": "1.0.0-beta10",
+  "version": "1.0.0-beta19",
   "description": "An Message Store client typescript implementation using gRPC",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -19,10 +19,13 @@
   },
   "homepage": "https://github.com/keixdata/message-store-client-ts#readme",
   "dependencies": {
+    "@types/lodash": "^4.14.149",
     "@yarnpkg/pnpify": "^2.0.0-rc.17",
     "grpc": "^1.24.2",
+    "lodash": "^4.17.15",
     "msgpack5": "^4.2.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "wait-for-expect": "^3.0.1"
   },
   "devDependencies": {
     "@types/jest": "^25.1.1",

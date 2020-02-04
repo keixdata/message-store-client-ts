@@ -64,10 +64,7 @@ export async function emitEvent(options: EmitEventOptions): Promise<string> {
   );
 }
 
-export async function subscribe<T>(
-  options: SubscriberOptions,
-  handler: Handler<T>
-) {
+export function subscribe<T>(options: SubscriberOptions, handler: Handler<T>) {
   const stream = client.makeServerStreamRequest<SubscriberOptions, Message>(
     "/MessageStore/Subscribe",
     serialize,
@@ -86,6 +83,7 @@ export async function subscribe<T>(
       }
     });
   });
+  return () => stream.cancel();
 }
 
 export async function runProjector<State, Message>(
@@ -114,4 +112,6 @@ export async function runProjector<State, Message>(
   });
 }
 
+import * as testUtils from "./test_utils";
 export { Message };
+export { testUtils };
