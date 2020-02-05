@@ -13,7 +13,7 @@
     "url": "git+https://github.com/keixdata/message-store-client-ts.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/keixdata/message-store-client-ts/issues"
   },
