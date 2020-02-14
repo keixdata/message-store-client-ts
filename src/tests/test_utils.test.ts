@@ -4,7 +4,14 @@ import {
   getStreamMessages,
   setupMessageStore
 } from "../test_utils";
-import { sendCommand, emitEvent, runProjector, subscribe, Message } from "..";
+import {
+  sendCommand,
+  emitEvent,
+  readLastMessage,
+  runProjector,
+  subscribe,
+  Message
+} from "..";
 import waitForExpect from "wait-for-expect";
 
 test("the mocked message store adds messages to the streams and calculate the positions", () => {
@@ -97,9 +104,9 @@ test("the mocked message store should wait for async service", async () => {
 
   const handler = msg => {
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const prevMessage = getStreamMessages("example");
-        const index = prevMessage?.length ?? 0;
+      setTimeout(async () => {
+        const prevMessage = await readLastMessage({ streamName: "example" });
+        const index = (prevMessage?.data.index ?? 0) + 1;
         return emitEvent({
           category: "example",
           event: msg.type + "_EVENT",
@@ -115,9 +122,9 @@ test("the mocked message store should wait for async service", async () => {
     const messages = getStreamMessages("example");
     expect(messages).toHaveLength(2);
     expect(messages[0].type).toEqual("SAY_HELLO_ONCE_EVENT");
-    expect(messages[0].data.index).toEqual(0);
+    expect(messages[0].data.index).toEqual(1);
     expect(messages[1].type).toEqual("SAY_HELLO_TWICE_EVENT");
-    expect(messages[1].data.index).toEqual(1);
+    expect(messages[1].data.index).toEqual(2);
   });
   unsubscribe();
 });

@@ -114,7 +114,9 @@ export function mockMessageStore() {
     },
     readLastMessage(options: ReadLastMessageOptions) {
       const messages = getStreamMessages(options.streamName);
-      return messages.length > 0 ? messages[messages.length - 1] : null;
+      return Promise.resolve(
+        messages.length > 0 ? messages[messages.length - 1] : null
+      );
     },
     runProjector(
       options: ProjectorOptions,

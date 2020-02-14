@@ -40,7 +40,7 @@ export async function sendCommand(
     null
   );
 }
-export async function readLastMessage<T>(
+export async function readLastMessage<T = Message>(
   options: ReadLastMessageOptions
 ): Promise<T> {
   return promisify(
