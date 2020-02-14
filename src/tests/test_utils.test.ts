@@ -4,7 +4,7 @@ import {
   getStreamMessages,
   setupMessageStore
 } from "../test_utils";
-import { sendCommand, runProjector, subscribe, Message } from "..";
+import { sendCommand, emitEvent, runProjector, subscribe, Message } from "..";
 import waitForExpect from "wait-for-expect";
 
 test("the mocked message store adds messages to the streams and calculate the positions", () => {
@@ -77,4 +77,47 @@ test("the mocked message store should support categories", async () => {
 
   const result = await runProjector({ streamName: "example" }, reducer, []);
   expect(result).toHaveLength(3);
+});
+
+test("the mocked message store should wait for async service", async () => {
+  setupMessageStore([
+    {
+      stream_name: "example:command",
+      type: "SAY_HELLO_ONCE",
+      data: {},
+      metadata: {}
+    },
+    {
+      stream_name: "example:command",
+      type: "SAY_HELLO_TWICE",
+      data: {},
+      metadata: {}
+    }
+  ]);
+
+  const handler = msg => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const prevMessage = getStreamMessages("example");
+        const index = prevMessage?.length ?? 0;
+        return emitEvent({
+          category: "example",
+          event: msg.type + "_EVENT",
+          data: { index },
+          metadata: {}
+        }).then(resolve);
+      }, 1000);
+    });
+  };
+  const unsubscribe = subscribe({ streamName: "example:command" }, handler);
+
+  await waitForExpect(() => {
+    const messages = getStreamMessages("example");
+    expect(messages).toHaveLength(2);
+    expect(messages[0].type).toEqual("SAY_HELLO_ONCE_EVENT");
+    expect(messages[0].data.index).toEqual(0);
+    expect(messages[1].type).toEqual("SAY_HELLO_TWICE_EVENT");
+    expect(messages[1].data.index).toEqual(1);
+  });
+  unsubscribe();
 });

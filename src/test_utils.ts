@@ -33,13 +33,29 @@ export function pushMessage(message: PartialMessage) {
   return nextMessage.global_position;
 }
 
+function isCategoryStream(streamName: string) {
+  return streamName.indexOf("-") < 0;
+}
+
+function isCommandStream(streamName: string) {
+  return streamName.indexOf(":command") >= 0;
+}
+
 export function getStreamMessages(streamName: string): Message[] {
-  const isCategory = streamName.indexOf("-") < 0;
+  const isCategory = isCategoryStream(streamName);
+  const isCommand = isCommandStream(streamName);
 
   if (isCategory) {
-    const streams = Object.keys(messages).filter(stream =>
-      stream.startsWith(streamName)
-    );
+    const streams = Object.keys(messages).filter(stream => {
+      if (!stream.startsWith(streamName)) {
+        return false;
+      }
+      if (isCommand) {
+        return isCommandStream(stream);
+      } else {
+        return !isCommandStream(stream);
+      }
+    });
     return sortBy(flatten(map(streams, k => messages[k])), ["global_position"]);
   } else {
     return messages[streamName] ?? [];

@@ -37,7 +37,11 @@ export interface ProjectorOptions {
   untilPosition?: number;
 }
 
-export type Message<Type = "", Data = {}, Metadata = { traceId: string }> = {
+export type Message<
+  Type = string,
+  Data = any,
+  Metadata = { traceId: string }
+> = {
   id: string;
   stream_name: string;
   type: Type;
