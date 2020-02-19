@@ -321,6 +321,14 @@
         "version": "8d34c540ac7dede9e3d4de9126bf2637f48c90a46964c1c3066909d80314275e",
         "signature": "3ab9ea90af30c9f99f94d47dbe2b36f2bdb745aa5a7acb4d754afd804c5d1cce"
       },
+      "./node_modules/@types/uuid/interfaces.d.ts": {
+        "version": "60ea69b95f7bad47f3e6cb8a695a53f5a1e58c2d0fb2c1b4c4adc923b06b7484",
+        "signature": "60ea69b95f7bad47f3e6cb8a695a53f5a1e58c2d0fb2c1b4c4adc923b06b7484"
+      },
+      "./node_modules/@types/uuid/index.d.ts": {
+        "version": "2436135c1aed97241b78053a75fd66b3efbae8c43b5ba4138d6009d801f5f3a0",
+        "signature": "2436135c1aed97241b78053a75fd66b3efbae8c43b5ba4138d6009d801f5f3a0"
+      },
       "./node_modules/@types/lodash/ts3.1/common/common.d.ts": {
         "version": "4025cf62742c5bb3d383c8a62342481622c87e3397ea5e7b7baab18b9efd5798",
         "signature": "4025cf62742c5bb3d383c8a62342481622c87e3397ea5e7b7baab18b9efd5798"
@@ -378,8 +386,8 @@
         "signature": "095b817a5042af7140cc5c6a59d84fe731156193191b4ec39a37d23e526cc653"
       },
       "./src/test_utils.ts": {
-        "version": "6ce0eb040fccfefc563e0cf808be4307eb4aa2d6edb67da87a71e41fa22000c3",
-        "signature": "9cde758d3d3b31d5439e080f5ac523bb2bcdede7a7464999b4657aa72787c31b"
+        "version": "3da9cecf2fe39f9346ef131b6313c7a6429ad645783c3c4b10f52e9c500baaf7",
+        "signature": "f7ac03692c690576b5b2c7f0a220b0ce33993322251e12c63ccd7a0a7fe00cf0"
       },
       "./src/index.ts": {
         "version": "8f0c74cc17dac17564385328201a91199fd3c008a49b9ac9999248aeb9b6ee96",
@@ -1068,6 +1076,19 @@
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.5/util.d.ts"
       ],
+      "./node_modules/@types/uuid/interfaces.d.ts": [
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/ts3.5/fs.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.5/util.d.ts"
+      ],
+      "./node_modules/@types/uuid/index.d.ts": [
+        "./node_modules/@types/uuid/interfaces.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/ts3.5/fs.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.5/util.d.ts"
+      ],
       "./node_modules/@types/lodash/ts3.1/common/common.d.ts": [
         "./node_modules/@types/lodash/ts3.1/index.d.ts",
         "./node_modules/@types/lodash/ts3.1/common/array.d.ts",
@@ -1310,6 +1331,7 @@
       ],
       "./src/test_utils.ts": [
         "./src/types.ts",
+        "./node_modules/@types/uuid/index.d.ts",
         "./node_modules/@types/lodash/ts3.1/index.d.ts",
         "./node_modules/wait-for-expect/lib/index.d.ts",
         "./node_modules/@types/node/fs.d.ts",
@@ -2058,6 +2080,19 @@
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.5/util.d.ts"
       ],
+      "./node_modules/@types/uuid/interfaces.d.ts": [
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/ts3.5/fs.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.5/util.d.ts"
+      ],
+      "./node_modules/@types/uuid/index.d.ts": [
+        "./node_modules/@types/uuid/interfaces.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/ts3.5/fs.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.5/util.d.ts"
+      ],
       "./node_modules/@types/lodash/ts3.1/common/common.d.ts": [
         "./node_modules/@types/lodash/ts3.1/index.d.ts",
         "./node_modules/@types/lodash/ts3.1/common/array.d.ts",
@@ -2539,6 +2574,8 @@
       "./node_modules/@types/msgpack5/index.d.ts",
       "./src/utils.ts",
       "./src/types.ts",
+      "./node_modules/@types/uuid/interfaces.d.ts",
+      "./node_modules/@types/uuid/index.d.ts",
       "./node_modules/@types/lodash/ts3.1/common/common.d.ts",
       "./node_modules/@types/lodash/ts3.1/common/array.d.ts",
       "./node_modules/@types/lodash/ts3.1/common/collection.d.ts",
@@ -2553,6 +2590,8 @@
       "./node_modules/@types/lodash/ts3.1/common/util.d.ts",
       "./node_modules/@types/lodash/ts3.1/index.d.ts",
       "./node_modules/wait-for-expect/lib/index.d.ts",
+      "./src/test_utils.ts",
+      "./src/index.ts",
       "./node_modules/@babel/types/lib/index.d.ts",
       "./node_modules/@types/babel__generator/index.d.ts",
       "./node_modules/@types/babel__traverse/index.d.ts",
@@ -2574,9 +2613,7 @@
       "./node_modules/@types/stack-utils/index.d.ts",
       "./node_modules/@types/yargs-parser/index.d.ts",
       "./node_modules/@types/yargs/index.d.ts",
-      "./src/test_utils.ts",
-      "./src/tests/test_utils.test.ts",
-      "./src/index.ts"
+      "./src/tests/test_utils.test.ts"
     ]
   },
   "version": "3.7.5"

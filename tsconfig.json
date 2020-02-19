@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "outDir": "dist/",
-    "rootDir": "src/",
-    "incremental": true,
+    "rootDir": "src",
     "declaration": true,
     "lib": ["ES2015"],
     "esModuleInterop": true
   },
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }
