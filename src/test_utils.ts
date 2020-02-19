@@ -18,13 +18,15 @@ let globalPosition = 0;
 type PartialMessage = Omit<
   Message<string, {}, {}>,
   "global_position" | "position" | "time" | "id"
->;
+> &
+  Pick<Partial<Message<string, {}, {}>>, "time">;
 
 export function pushMessage(message: PartialMessage) {
   const { stream_name } = message;
   const prev = messages[stream_name] ?? [];
   const nextMessage = {
     ...message,
+    time: message.time ?? new Date(),
     id: v4(),
     global_position: globalPosition++,
     position: prev.length

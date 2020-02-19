@@ -378,8 +378,8 @@
         "signature": "095b817a5042af7140cc5c6a59d84fe731156193191b4ec39a37d23e526cc653"
       },
       "./src/test_utils.ts": {
-        "version": "fee41a7dd4222116156235d046c5ea07a8df7d5ebb04d4a210b3f2a41950317b",
-        "signature": "8cd4f19e2f77e3349294789c4972470c9567f72420bc5fc0481f45792ad24206"
+        "version": "6ce0eb040fccfefc563e0cf808be4307eb4aa2d6edb67da87a71e41fa22000c3",
+        "signature": "9cde758d3d3b31d5439e080f5ac523bb2bcdede7a7464999b4657aa72787c31b"
       },
       "./src/index.ts": {
         "version": "8f0c74cc17dac17564385328201a91199fd3c008a49b9ac9999248aeb9b6ee96",
@@ -2575,8 +2575,8 @@
       "./node_modules/@types/yargs-parser/index.d.ts",
       "./node_modules/@types/yargs/index.d.ts",
       "./src/test_utils.ts",
-      "./src/index.ts",
-      "./src/tests/test_utils.test.ts"
+      "./src/tests/test_utils.test.ts",
+      "./src/index.ts"
     ]
   },
   "version": "3.7.5"
