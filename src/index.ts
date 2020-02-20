@@ -86,6 +86,12 @@ export function subscribe<T>(options: SubscriberOptions, handler: Handler<T>) {
   return () => stream.cancel();
 }
 
+export function combineSubscriber(...args: (() => void)[]) {
+  return () => {
+    args.forEach(close => close());
+  };
+}
+
 export async function runProjector<State, Message>(
   options: ProjectorOptions,
   reducer: Projector<State, Message>,

@@ -113,6 +113,11 @@ export function mockMessageStore() {
       const interval = setInterval(() => tick(), 150);
       return () => clearInterval(interval);
     },
+    combineSubscriber(...args: (() => void)[]) {
+      return () => {
+        args.forEach(close => close());
+      };
+    },
     readLastMessage(options: ReadLastMessageOptions) {
       const messages = getStreamMessages(options.streamName);
       return Promise.resolve(
