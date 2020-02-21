@@ -64,7 +64,11 @@ export async function emitEvent(options: EmitEventOptions): Promise<string> {
   );
 }
 
-export function subscribe<T>(options: SubscriberOptions, handler: Handler<T>) {
+export function subscribe<T, Ctx>(
+  options: SubscriberOptions,
+  handler: Handler<T, Ctx>,
+  context?: Ctx
+) {
   const stream = client.makeServerStreamRequest<SubscriberOptions, Message>(
     "/MessageStore/Subscribe",
     serialize,
@@ -75,7 +79,7 @@ export function subscribe<T>(options: SubscriberOptions, handler: Handler<T>) {
   let promise = Promise.resolve();
   stream.on("data", msg => {
     promise = promise.then(() => {
-      const maybePromise: any = handler(msg);
+      const maybePromise: any = handler(msg, context);
       if ("then" in maybePromise) {
         return maybePromise;
       } else {

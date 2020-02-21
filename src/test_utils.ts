@@ -96,7 +96,11 @@ export function mockMessageStore() {
       });
       return Promise.resolve(pos);
     },
-    subscribe(options: SubscriberOptions, handler: Handler<any>) {
+    subscribe(
+      options: SubscriberOptions,
+      handler: Handler<any, any>,
+      context: any
+    ) {
       let position = options.lastPosition ?? 0;
       let numberOfMessageRead = 0;
       function tick() {
@@ -106,7 +110,7 @@ export function mockMessageStore() {
           const newMessages = messageList.slice(position);
           numberOfMessageRead += newMessages.length;
           position = lastIndex;
-          newMessages.forEach(handler);
+          newMessages.forEach(item => handler(item, context));
         }
       }
       tick();
