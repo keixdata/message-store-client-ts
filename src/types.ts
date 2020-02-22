@@ -16,7 +16,10 @@ export interface EmitEventOptions {
 }
 
 export type Projector<State, Msg> = (prev: State, next: Msg) => State;
-export type Handler<I = {}> = (next: I) => Promise<any> | void;
+export type Handler<I = {}, Ctx = void> = (
+  next: I,
+  context?: Ctx
+) => Promise<any> | void;
 
 export interface ReadLastMessageOptions {
   streamName: string;
