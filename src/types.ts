@@ -28,6 +28,8 @@ export interface ReadLastMessageOptions {
 export interface PublishResponse {
   streamName: string;
   position: string;
+  time: string;
+  globalPosition: string;
 }
 
 export interface SubscriberOptions {

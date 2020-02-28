@@ -41,6 +41,8 @@ export async function sendCommand(
     null
   ).then((res: any) => ({
     streamName: res.stream_name,
+    globalPosition: res.global_position,
+    time: res.time,
     position: res.position
   }));
 }
@@ -69,6 +71,8 @@ export async function emitEvent(
     null
   ).then((res: any) => ({
     streamName: res.stream_name,
+    globalPosition: res.global_position,
+    time: res.time,
     position: res.position
   }));
 }
@@ -96,7 +100,10 @@ export function subscribe<T, Ctx>(
       }
     });
   });
-  return () => stream.cancel();
+  return () => {
+    stream.on("error", () => null);
+    stream.cancel();
+  };
 }
 
 export function combineSubscriber(...args: (() => void)[]) {
