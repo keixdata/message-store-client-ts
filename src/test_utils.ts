@@ -6,6 +6,7 @@ import {
   Handler,
   ProjectorOptions,
   Projector,
+  BaseMetadata,
   ReadLastMessageOptions
 } from "./types";
 import { v4 } from "uuid";
@@ -16,9 +17,9 @@ let messages = {};
 let globalPosition = 0;
 
 type PartialMessage = Omit<
-  Message<string, {}, {}>,
-  "global_position" | "position" | "time" | "id"
-> & { time?: Date };
+  Message<string, {}>,
+  "global_position" | "position" | "time" | "id" | "metadata"
+> & { time?: Date; metadata?: Partial<BaseMetadata> };
 
 export function pushMessage(message: PartialMessage) {
   const { stream_name } = message;
@@ -78,11 +79,11 @@ export function mockMessageStore() {
       const pos = pushMessage({
         ...options,
         data: options.data ?? {},
-        metadata: options.metadata ?? {},
+        metadata: options.metadata ?? { traceId: v4() },
         type: options.command,
         stream_name: fakeStreamName
       });
-      return Promise.resolve(pos);
+      return Promise.resolve({ streamName: fakeStreamName, position: pos });
     },
     emitEvent(options: EmitEventOptions) {
       const { category, id } = options;
@@ -90,11 +91,11 @@ export function mockMessageStore() {
       const pos = pushMessage({
         ...options,
         data: options.data ?? {},
-        metadata: options.metadata ?? {},
+        metadata: options.metadata ?? { traceId: v4() },
         type: options.event,
         stream_name: fakeStreamName
       });
-      return Promise.resolve(pos);
+      return Promise.resolve({ streamName: fakeStreamName, position: pos });
     },
     subscribe(
       options: SubscriberOptions,

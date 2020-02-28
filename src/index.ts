@@ -8,7 +8,8 @@ import {
   Message,
   Handler,
   ProjectorOptions,
-  Projector
+  Projector,
+  PublishResponse
 } from "./types";
 
 const port = process.env.PORT ?? "8080";
@@ -30,7 +31,7 @@ function promisify<T>(
 
 export async function sendCommand(
   options: SendCommandOptions
-): Promise<string> {
+): Promise<PublishResponse> {
   return promisify(
     "/MessageStore/SendCommand",
     serialize,
@@ -38,7 +39,10 @@ export async function sendCommand(
     options,
     null,
     null
-  );
+  ).then((res: any) => ({
+    streamName: res.stream_name,
+    position: res.position
+  }));
 }
 export async function readLastMessage<T = Message>(
   options: ReadLastMessageOptions
@@ -53,7 +57,9 @@ export async function readLastMessage<T = Message>(
   );
 }
 
-export async function emitEvent(options: EmitEventOptions): Promise<string> {
+export async function emitEvent(
+  options: EmitEventOptions
+): Promise<PublishResponse> {
   return promisify(
     "/MessageStore/EmitEvent",
     serialize,
@@ -61,7 +67,10 @@ export async function emitEvent(options: EmitEventOptions): Promise<string> {
     options,
     null,
     null
-  );
+  ).then((res: any) => ({
+    streamName: res.stream_name,
+    position: res.position
+  }));
 }
 
 export function subscribe<T, Ctx>(

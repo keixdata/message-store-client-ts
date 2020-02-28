@@ -15,21 +15,17 @@ import {
 import waitForExpect from "wait-for-expect";
 
 test("the mocked message store adds messages to the streams and calculate the positions", () => {
-  setupMessageStore([
-    { stream_name: "example", type: "SAY_HELLO", data: {}, metadata: {} }
-  ]);
+  setupMessageStore([{ stream_name: "example", type: "SAY_HELLO", data: {} }]);
 
   pushMessage({
     stream_name: "example",
     type: "SAY_HELLO",
-    data: {},
-    metadata: {}
+    data: {}
   });
   pushMessage({
     stream_name: "example-abc",
     type: "SAY_HELLO",
-    data: {},
-    metadata: {}
+    data: {}
   });
 
   let messages = getStreamMessages("example");
@@ -47,9 +43,9 @@ test("the mocked message store adds messages to the streams and calculate the po
 
 test("the mocked message store should allow to project events", async () => {
   setupMessageStore([
-    { stream_name: "example", type: "SAY_HELLO", data: {}, metadata: {} },
-    { stream_name: "example", type: "SAY_HELLO", data: {}, metadata: {} },
-    { stream_name: "example", type: "SAY_HELLO", data: {}, metadata: {} }
+    { stream_name: "example", type: "SAY_HELLO", data: {} },
+    { stream_name: "example", type: "SAY_HELLO", data: {} },
+    { stream_name: "example", type: "SAY_HELLO", data: {} }
   ]);
   function reducer(prev, next) {
     return prev + 1;
@@ -60,9 +56,7 @@ test("the mocked message store should allow to project events", async () => {
 });
 
 test("the mocked message store should allow subscription", async () => {
-  setupMessageStore([
-    { stream_name: "example", type: "SAY_HELLO", data: {}, metadata: {} }
-  ]);
+  setupMessageStore([{ stream_name: "example", type: "SAY_HELLO", data: {} }]);
 
   const handler = jest.fn();
   const unsubscribe = subscribe({ streamName: "example" }, handler);
@@ -73,9 +67,9 @@ test("the mocked message store should allow subscription", async () => {
 
 test("the mocked message store should support categories", async () => {
   setupMessageStore([
-    { stream_name: "example-abc", type: "SAY_HELLO", data: {}, metadata: {} },
-    { stream_name: "example-def", type: "SAY_HELLO", data: {}, metadata: {} },
-    { stream_name: "example-ref", type: "SAY_HELLO", data: {}, metadata: {} }
+    { stream_name: "example-abc", type: "SAY_HELLO", data: {} },
+    { stream_name: "example-def", type: "SAY_HELLO", data: {} },
+    { stream_name: "example-ref", type: "SAY_HELLO", data: {} }
   ]);
 
   function reducer(prev, next: Message) {
@@ -110,8 +104,7 @@ test("the mocked message store should wait for async service", async () => {
         return emitEvent({
           category: "example",
           event: msg.type + "_EVENT",
-          data: { index },
-          metadata: {}
+          data: { index }
         }).then(resolve);
       }, 1000);
     });
