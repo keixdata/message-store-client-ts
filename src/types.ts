@@ -35,6 +35,7 @@ export interface PublishResponse {
 export interface SubscriberOptions {
   streamName: string;
   subscriberId?: string;
+  condition?: string;
   tickDelayMs?: number;
   lastPosition?: number;
   consumerGroupSize?: number;
