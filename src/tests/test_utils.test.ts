@@ -121,3 +121,37 @@ test("the mocked message store should wait for async service", async () => {
   });
   unsubscribe();
 });
+
+it("should support async subscriber", async () => {
+  let mockFn = jest.fn();
+  setupMessageStore([
+    {
+      stream_name: "example:abc",
+      type: "",
+      data: {},
+      metadata: {}
+    },
+    {
+      stream_name: "example:def",
+      type: "",
+      data: {},
+      metadata: {}
+    }
+  ]);
+  const start = new Date().valueOf();
+  const handler = () =>
+    new Promise(resolve => {
+      setTimeout(() => {
+        mockFn((new Date().valueOf() - start) / 1000);
+        resolve(true);
+      }, 1000);
+    });
+  const unsubscribe = subscribe({ streamName: "example" }, handler);
+
+  await waitForExpect(() => {
+    expect(mockFn).toBeCalledTimes(2);
+    expect(mockFn.mock.calls[0][0]).toBeCloseTo(1);
+    expect(mockFn.mock.calls[1][0]).toBeCloseTo(2);
+  });
+  unsubscribe();
+});

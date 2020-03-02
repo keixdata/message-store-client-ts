@@ -70,6 +70,20 @@ export function setupMessageStore(initialMessages: PartialMessage[] = []) {
   initialMessages.forEach(msg => pushMessage(msg));
 }
 
+export const serialPromises = <T>(fns: (() => Promise<T>)[]) =>
+  fns.reduce(
+    (promise, fn) => promise.then(results => fn().then(r => [...results, r])),
+    Promise.resolve([] as T[])
+  );
+
+async function pushSerial(
+  queue: Promise<any>,
+  fn: () => Promise<any>
+): Promise<any> {
+  await queue;
+  return fn();
+}
+
 export function mockMessageStore() {
   jest.doMock("./index", () => ({
     __esModule: true,
@@ -102,20 +116,38 @@ export function mockMessageStore() {
       handler: Handler<any, any>,
       context: any
     ) {
+      let queue = Promise.resolve();
       let position = options.lastPosition ?? 0;
       let numberOfMessageRead = 0;
-      function tick() {
+
+      async function tick() {
         const messageList = getStreamMessages(options.streamName);
         const lastIndex = messageList.length - 1;
         if (messageList.length > numberOfMessageRead) {
           const newMessages = messageList.slice(position);
           numberOfMessageRead += newMessages.length;
           position = lastIndex;
-          newMessages.forEach(item => handler(item, context));
+
+          await serialPromises(
+            newMessages.map(msg => {
+              return async () => {
+                const maybePromise: any = handler(msg);
+                if (maybePromise != null && "then" in maybePromise) {
+                  await maybePromise;
+                }
+                return;
+              };
+            })
+          );
+        } else {
+          return Promise.resolve();
         }
       }
+
       tick();
-      const interval = setInterval(() => tick(), 150);
+      const interval = setInterval(() => {
+        queue = pushSerial(queue, tick);
+      }, 150);
       return () => clearInterval(interval);
     },
     combineSubscriber(...args: (() => void)[]) {
