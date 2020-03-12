@@ -117,16 +117,14 @@ export function mockMessageStore() {
       context: any
     ) {
       let queue = Promise.resolve();
-      let position = options.lastPosition ?? 0;
       let numberOfMessageRead = 0;
 
       async function tick() {
         const messageList = getStreamMessages(options.streamName);
         const lastIndex = messageList.length - 1;
         if (messageList.length > numberOfMessageRead) {
-          const newMessages = messageList.slice(position);
+          const newMessages = messageList.slice(numberOfMessageRead);
           numberOfMessageRead += newMessages.length;
-          position = lastIndex;
 
           await serialPromises(
             newMessages.map(msg => {

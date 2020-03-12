@@ -1,6 +1,6 @@
 {
   "name": "@keix/message-store-client",
-  "version": "1.0.0-beta41",
+  "version": "1.0.0-beta42",
   "description": "An Message Store client typescript implementation using gRPC",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
