@@ -6,6 +6,7 @@ import {
   Handler,
   ProjectorOptions,
   Projector,
+  BaseMetadata,
   ReadLastMessageOptions
 } from "./types";
 import { v4 } from "uuid";
@@ -16,9 +17,9 @@ let messages = {};
 let globalPosition = 0;
 
 type PartialMessage = Omit<
-  Message<string, {}, {}>,
-  "global_position" | "position" | "time" | "id"
-> & { time?: Date };
+  Message<string, {}>,
+  "global_position" | "position" | "time" | "id" | "metadata"
+> & { time?: Date; metadata?: Partial<BaseMetadata> };
 
 export function pushMessage(message: PartialMessage) {
   const { stream_name } = message;
@@ -69,6 +70,20 @@ export function setupMessageStore(initialMessages: PartialMessage[] = []) {
   initialMessages.forEach(msg => pushMessage(msg));
 }
 
+export const serialPromises = <T>(fns: (() => Promise<T>)[]) =>
+  fns.reduce(
+    (promise, fn) => promise.then(results => fn().then(r => [...results, r])),
+    Promise.resolve([] as T[])
+  );
+
+async function pushSerial(
+  queue: Promise<any>,
+  fn: () => Promise<any>
+): Promise<any> {
+  await queue;
+  return fn();
+}
+
 export function mockMessageStore() {
   jest.doMock("./index", () => ({
     __esModule: true,
@@ -78,11 +93,11 @@ export function mockMessageStore() {
       const pos = pushMessage({
         ...options,
         data: options.data ?? {},
-        metadata: options.metadata ?? {},
+        metadata: options.metadata ?? { traceId: v4() },
         type: options.command,
         stream_name: fakeStreamName
       });
-      return Promise.resolve(pos);
+      return Promise.resolve({ streamName: fakeStreamName, position: pos });
     },
     emitEvent(options: EmitEventOptions) {
       const { category, id } = options;
@@ -90,31 +105,49 @@ export function mockMessageStore() {
       const pos = pushMessage({
         ...options,
         data: options.data ?? {},
-        metadata: options.metadata ?? {},
+        metadata: options.metadata ?? { traceId: v4() },
         type: options.event,
         stream_name: fakeStreamName
       });
-      return Promise.resolve(pos);
+      return Promise.resolve({ streamName: fakeStreamName, position: pos });
     },
     subscribe(
       options: SubscriberOptions,
       handler: Handler<any, any>,
       context: any
     ) {
+      let queue = Promise.resolve();
       let position = options.lastPosition ?? 0;
       let numberOfMessageRead = 0;
-      function tick() {
+
+      async function tick() {
         const messageList = getStreamMessages(options.streamName);
         const lastIndex = messageList.length - 1;
         if (messageList.length > numberOfMessageRead) {
           const newMessages = messageList.slice(position);
           numberOfMessageRead += newMessages.length;
           position = lastIndex;
-          newMessages.forEach(item => handler(item, context));
+
+          await serialPromises(
+            newMessages.map(msg => {
+              return async () => {
+                const maybePromise: any = handler(msg);
+                if (maybePromise != null && "then" in maybePromise) {
+                  await maybePromise;
+                }
+                return;
+              };
+            })
+          );
+        } else {
+          return Promise.resolve();
         }
       }
+
       tick();
-      const interval = setInterval(() => tick(), 150);
+      const interval = setInterval(() => {
+        queue = pushSerial(queue, tick);
+      }, 150);
       return () => clearInterval(interval);
     },
     combineSubscriber(...args: (() => void)[]) {

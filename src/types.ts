@@ -2,7 +2,7 @@ export interface SendCommandOptions {
   command: string;
   category: string;
   data?: {};
-  metadata?: {};
+  metadata?: BaseMetadata;
   id?: string;
   expectedVersion?: number;
 }
@@ -10,7 +10,7 @@ export interface EmitEventOptions {
   event: string;
   category: string;
   data?: {};
-  metadata?: {};
+  metadata?: BaseMetadata;
   id?: string;
   expectedVersion?: number;
 }
@@ -25,9 +25,17 @@ export interface ReadLastMessageOptions {
   streamName: string;
 }
 
+export interface PublishResponse {
+  streamName: string;
+  position: string;
+  time: string;
+  globalPosition: string;
+}
+
 export interface SubscriberOptions {
   streamName: string;
   subscriberId?: string;
+  condition?: string;
   tickDelayMs?: number;
   lastPosition?: number;
   consumerGroupSize?: number;
@@ -40,10 +48,15 @@ export interface ProjectorOptions {
   untilPosition?: number;
 }
 
+export interface BaseMetadata {
+  traceId: string;
+  userId?: string;
+}
+
 export type Message<
   Type = string,
   Data = any,
-  Metadata = { traceId: string }
+  Metadata extends BaseMetadata = BaseMetadata
 > = {
   id: string;
   stream_name: string;
