@@ -1,4 +1,4 @@
-import { Client, credentials } from "grpc";
+import { Client, credentials, StatusObject, status, Metadata } from "grpc";
 import { serialize, deserialize } from "./utils";
 import {
   SendCommandOptions,
@@ -91,6 +91,12 @@ export function subscribe<T, Ctx>(
 
   let promise = Promise.resolve();
   stream.on("data", msg => {
+    // If its' the keep alive.
+    if ("ok" in msg) {
+      console.log("Received keep alive...");
+      return;
+    }
+
     promise = promise.then(() => {
       const maybePromise: any = handler(msg, context);
       if ("then" in maybePromise) {
@@ -100,6 +106,7 @@ export function subscribe<T, Ctx>(
       }
     });
   });
+
   return () => {
     stream.on("error", () => null);
     stream.cancel();
