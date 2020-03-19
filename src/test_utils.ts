@@ -129,7 +129,7 @@ export function mockMessageStore() {
           await serialPromises(
             newMessages.map(msg => {
               return async () => {
-                const maybePromise: any = handler(msg);
+                const maybePromise: any = handler(msg, context);
                 if (maybePromise != null && "then" in maybePromise) {
                   await maybePromise;
                 }
