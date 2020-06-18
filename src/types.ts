@@ -1,16 +1,24 @@
-export interface SendCommandOptions {
+import { Base } from "msgpack5";
+
+export interface SendCommandOptions<
+  Data = {},
+  Metadata extends BaseMetadata = BaseMetadata
+> {
   command: string;
   category: string;
-  data?: {};
-  metadata?: BaseMetadata;
+  data?: Data;
+  metadata?: Metadata;
   id?: string;
   expectedVersion?: number;
 }
-export interface EmitEventOptions {
+export interface EmitEventOptions<
+  Data = {},
+  Metadata extends BaseMetadata = BaseMetadata
+> {
   event: string;
   category: string;
-  data?: {};
-  metadata?: BaseMetadata;
+  data?: Data;
+  metadata?: Metadata;
   id?: string;
   expectedVersion?: number;
 }
