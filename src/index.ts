@@ -9,7 +9,8 @@ import {
   Handler,
   ProjectorOptions,
   Projector,
-  PublishResponse
+  PublishResponse,
+  BaseMetadata,
 } from "./types";
 
 const port = process.env.PORT ?? "8080";
@@ -20,7 +21,7 @@ const client = new Client(host, credentials.createInsecure());
 function promisify<T>(
   ...args: [string, (opb: {}) => Buffer, (buf: Buffer) => {}, {}, null, null]
 ): Promise<T> {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const [a, b, c, d, e, f] = args;
     const callback = (err: Error, res: T) =>
       err != null ? reject(err) : resolve(res);
@@ -29,9 +30,10 @@ function promisify<T>(
   });
 }
 
-export async function sendCommand(
-  options: SendCommandOptions
-): Promise<PublishResponse> {
+export async function sendCommand<
+  Data = {},
+  Metadata extends BaseMetadata = BaseMetadata
+>(options: SendCommandOptions<Data, Metadata>): Promise<PublishResponse> {
   return promisify(
     "/MessageStore/SendCommand",
     serialize,
@@ -43,7 +45,7 @@ export async function sendCommand(
     streamName: res.stream_name,
     globalPosition: res.global_position,
     time: res.time,
-    position: res.position
+    position: res.position,
   }));
 }
 export async function readLastMessage<T = Message>(
@@ -59,9 +61,10 @@ export async function readLastMessage<T = Message>(
   );
 }
 
-export async function emitEvent(
-  options: EmitEventOptions
-): Promise<PublishResponse> {
+export async function emitEvent<
+  Data = {},
+  Metadata extends BaseMetadata = BaseMetadata
+>(options: EmitEventOptions<Data, Metadata>): Promise<PublishResponse> {
   return promisify(
     "/MessageStore/EmitEvent",
     serialize,
@@ -73,7 +76,7 @@ export async function emitEvent(
     streamName: res.stream_name,
     globalPosition: res.global_position,
     time: res.time,
-    position: res.position
+    position: res.position,
   }));
 }
 
@@ -90,7 +93,7 @@ export function subscribe<T, Ctx>(
   );
 
   let promise = Promise.resolve();
-  stream.on("data", msg => {
+  stream.on("data", (msg) => {
     // If its' the keep alive.
     if ("ok" in msg) {
       console.log("Received keep alive...");
@@ -115,7 +118,7 @@ export function subscribe<T, Ctx>(
 
 export function combineSubscriber(...args: (() => void)[]) {
   return () => {
-    args.forEach(close => close());
+    args.forEach((close) => close());
   };
 }
 
@@ -133,7 +136,7 @@ export async function runProjector<State, Message>(
 
   // Return a new promise, that will be resolved once the END cmd is received,
   // with the reduced value.
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let value = initialValue;
     stream.on("data", (msg: Message | { _cmd: "END" }) => {
       if ("_cmd" in msg) {
@@ -146,5 +149,6 @@ export async function runProjector<State, Message>(
 }
 
 import * as testUtils from "./test_utils";
+import { Base } from "msgpack5";
 export { Message };
 export { testUtils };
