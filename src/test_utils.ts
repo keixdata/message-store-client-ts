@@ -7,10 +7,10 @@ import {
   ProjectorOptions,
   Projector,
   BaseMetadata,
-  ReadLastMessageOptions
+  ReadLastMessageOptions,
 } from "./types";
 import { v4 } from "uuid";
-import { map, flatten, sortBy } from "lodash";
+import { map, flatten, sortBy, startsWith } from "lodash";
 import waitForExpect from "wait-for-expect";
 
 let messages = {};
@@ -29,7 +29,7 @@ export function pushMessage(message: PartialMessage) {
     time: message.time ?? new Date(),
     id: v4(),
     global_position: globalPosition++,
-    position: prev.length
+    position: prev.length,
   };
   messages[stream_name] = [...prev, nextMessage];
   return nextMessage.global_position;
@@ -48,8 +48,12 @@ export function getStreamMessages(streamName: string): Message[] {
   const isCommand = isCommandStream(streamName);
 
   if (isCategory) {
-    const streams = Object.keys(messages).filter(stream => {
-      if (!stream.startsWith(streamName)) {
+    const streams = Object.keys(messages).filter((stream) => {
+      if (
+        !stream.endsWith(streamName) &&
+        !stream.startsWith(`${streamName}-`) &&
+        !stream.startsWith(`${streamName}:`)
+      ) {
         return false;
       }
       if (isCommand) {
@@ -58,7 +62,9 @@ export function getStreamMessages(streamName: string): Message[] {
         return !isCommandStream(stream);
       }
     });
-    return sortBy(flatten(map(streams, k => messages[k])), ["global_position"]);
+    return sortBy(flatten(map(streams, (k) => messages[k])), [
+      "global_position",
+    ]);
   } else {
     return messages[streamName] ?? [];
   }
@@ -67,12 +73,13 @@ export function getStreamMessages(streamName: string): Message[] {
 export function setupMessageStore(initialMessages: PartialMessage[] = []) {
   // Clear the message store.
   messages = {};
-  initialMessages.forEach(msg => pushMessage(msg));
+  initialMessages.forEach((msg) => pushMessage(msg));
 }
 
 export const serialPromises = <T>(fns: (() => Promise<T>)[]) =>
   fns.reduce(
-    (promise, fn) => promise.then(results => fn().then(r => [...results, r])),
+    (promise, fn) =>
+      promise.then((results) => fn().then((r) => [...results, r])),
     Promise.resolve([] as T[])
   );
 
@@ -95,7 +102,7 @@ export function mockMessageStore() {
         data: options.data ?? {},
         metadata: options.metadata ?? { traceId: v4() },
         type: options.command,
-        stream_name: fakeStreamName
+        stream_name: fakeStreamName,
       });
       return Promise.resolve({ streamName: fakeStreamName, position: pos });
     },
@@ -107,7 +114,7 @@ export function mockMessageStore() {
         data: options.data ?? {},
         metadata: options.metadata ?? { traceId: v4() },
         type: options.event,
-        stream_name: fakeStreamName
+        stream_name: fakeStreamName,
       });
       return Promise.resolve({ streamName: fakeStreamName, position: pos });
     },
@@ -127,7 +134,7 @@ export function mockMessageStore() {
           numberOfMessageRead += newMessages.length;
 
           await serialPromises(
-            newMessages.map(msg => {
+            newMessages.map((msg) => {
               return async () => {
                 const maybePromise: any = handler(msg, context);
                 if (maybePromise != null && "then" in maybePromise) {
@@ -150,7 +157,7 @@ export function mockMessageStore() {
     },
     combineSubscriber(...args: (() => void)[]) {
       return () => {
-        args.forEach(close => close());
+        args.forEach((close) => close());
       };
     },
     readLastMessage(options: ReadLastMessageOptions) {
@@ -166,7 +173,7 @@ export function mockMessageStore() {
     ) {
       const messagesList = getStreamMessages(options.streamName);
       return Promise.resolve(messagesList.reduce(reducer, initialValue));
-    }
+    },
   }));
 }
 
