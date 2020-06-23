@@ -43,17 +43,19 @@ function isCommandStream(streamName: string) {
   return streamName.indexOf(":command") >= 0;
 }
 
+function hasSameStreamName(a: string, b: string) {
+  return (
+    a === b || a.startsWith(`${b}-`) || a.startsWith(`${b}:`)
+  )
+}
+
 export function getStreamMessages(streamName: string): Message[] {
   const isCategory = isCategoryStream(streamName);
   const isCommand = isCommandStream(streamName);
 
   if (isCategory) {
     const streams = Object.keys(messages).filter((stream) => {
-      if (
-        !stream.endsWith(streamName) &&
-        !stream.startsWith(`${streamName}-`) &&
-        !stream.startsWith(`${streamName}:`)
-      ) {
+      if (!hasSameStreamName(stream, streamName)) {
         return false;
       }
       if (isCommand) {
