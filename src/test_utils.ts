@@ -173,7 +173,10 @@ export function mockMessageStore() {
       reducer: Projector<any, any>,
       initialValue: any
     ) {
-      const messagesList = getStreamMessages(options.streamName);
+      let messagesList = getStreamMessages(options.streamName);
+      if (options.untilPosition != null) {
+        messagesList = messagesList.filter(f => f.global_position <= options.untilPosition);
+      }
       return Promise.resolve(messagesList.reduce(reducer, initialValue));
     },
   }));
