@@ -1,4 +1,4 @@
-import { Client, credentials, StatusObject, status, Metadata } from "grpc";
+import { Client, credentials } from "@grpc/grpc-js";
 import { serialize, deserialize } from "./utils";
 import {
   SendCommandOptions,
@@ -11,6 +11,7 @@ import {
   Projector,
   PublishResponse,
   BaseMetadata,
+  ServiceDefinition,
 } from "./types";
 
 const port = process.env.PORT ?? "8080";
@@ -48,6 +49,40 @@ export async function sendCommand<
     position: res.position,
   }));
 }
+
+export async function registerService(
+  service: ServiceDefinition
+): Promise<boolean> {
+  return promisify(
+    "/MessageStore/RegisterService",
+    serialize,
+    deserialize,
+    service,
+    null,
+    null
+  );
+}
+export async function getService(name: string): Promise<boolean> {
+  return promisify(
+    "/MessageStore/GetService",
+    serialize,
+    deserialize,
+    { name },
+    null,
+    null
+  );
+}
+export async function retrieveServices(): Promise<boolean> {
+  return promisify(
+    "/MessageStore/RetrieveServices",
+    serialize,
+    deserialize,
+    {},
+    null,
+    null
+  );
+}
+
 export async function readLastMessage<T = Message>(
   options: ReadLastMessageOptions
 ): Promise<T> {
@@ -152,3 +187,4 @@ import * as testUtils from "./test_utils";
 import { Base } from "msgpack5";
 export { Message };
 export { testUtils };
+export { getTypescriptDefinition } from "./definition";

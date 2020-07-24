@@ -1,4 +1,5 @@
 import { Base } from "msgpack5";
+import { JSONSchema } from "json-schema-to-typescript";
 
 export interface SendCommandOptions<
   Data = {},
@@ -75,3 +76,24 @@ export type Message<
   metadata: Metadata;
   time: Date;
 };
+
+export interface CommandDefinition {
+  name: string;
+  stream: string;
+  description: string;
+  payload: JSONSchema;
+}
+
+export interface EventDefinition {
+  name: string;
+  stream: string;
+  description: string;
+  payload: JSONSchema;
+}
+
+export interface ServiceDefinition {
+  name: string;
+  description: string;
+  commands: CommandDefinition[];
+  events: EventDefinition[];
+}
