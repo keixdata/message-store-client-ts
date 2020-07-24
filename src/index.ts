@@ -7,6 +7,8 @@ import {
   SubscriberOptions,
   Message,
   Handler,
+  EventDefinition,
+  CommandDefinition,
   ProjectorOptions,
   Projector,
   PublishResponse,
@@ -185,6 +187,6 @@ export async function runProjector<State, Message>(
 
 import * as testUtils from "./test_utils";
 import { Base } from "msgpack5";
-export { Message };
+export { Message, ServiceDefinition, EventDefinition, CommandDefinition };
 export { testUtils };
 export { getTypescriptDefinition } from "./definition";
