@@ -66,7 +66,7 @@ async function generateTypescriptFromCommandsOrEvents(
 export async function getTypescriptDefinition(
   definition: ServiceDefinition
 ): Promise<string> {
-  const importType = `import type { Message } from 'message-store-client';`;
+  const importType = `import type { Message } from '@keix/message-store-client';`;
   const space = "";
 
   const commands = await generateTypescriptFromCommandsOrEvents(
