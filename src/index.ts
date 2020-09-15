@@ -137,14 +137,22 @@ export function subscribe<T, Ctx>(
       return;
     }
 
-    promise = promise.then(() => {
-      const maybePromise: any = handler(msg, context);
-      if ("then" in maybePromise) {
-        return maybePromise;
-      } else {
+    promise = promise
+      .then(() => {
+        const maybePromise: any = handler(msg, context);
+        if ("then" in maybePromise) {
+          return maybePromise;
+        } else {
+          return Promise.resolve();
+        }
+      })
+      .catch((err) => {
+        console.error(
+          "Catched an error in a subscriber, enabling fail safe..."
+        );
+        console.error(err);
         return Promise.resolve();
-      }
-    });
+      });
   });
 
   return () => {
