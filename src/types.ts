@@ -41,6 +41,10 @@ export interface PublishResponse {
   globalPosition: string;
 }
 
+export interface SubscriberStats {
+  count: number;
+}
+
 export interface SubscriberOptions {
   streamName: string;
   subscriberId?: string;
@@ -52,6 +56,10 @@ export interface SubscriberOptions {
   positionUpdateInterval?: number;
   idleUpdateInterval?: number;
   onKeepAlive?: (subscriberId: string, date: Date) => void;
+  onStatsUpdated?: (
+    subscriberId: string,
+    subscriberStats: SubscriberStats
+  ) => void;
 }
 export interface ProjectorOptions {
   streamName: string;

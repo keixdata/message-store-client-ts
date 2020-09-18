@@ -61,12 +61,9 @@ export async function registerService(
   );
 }
 export async function getService(name: string): Promise<boolean> {
-  return promisify(
-    "/MessageStore/GetService",
-    serialize,
-    deserialize,
-    { name }
-  );
+  return promisify("/MessageStore/GetService", serialize, deserialize, {
+    name,
+  });
 }
 export async function retrieveServices(): Promise<boolean> {
   return promisify(
@@ -111,7 +108,9 @@ export function subscribe<T, Ctx>(
   context?: Ctx
 ) {
   const subscriberId = options.subscriberId ?? v4();
-  console.log('Subscribe', subscriberId, options);
+  let count = 0;
+
+  console.log("Subscribe", subscriberId, options);
   const stream = client.makeServerStreamRequest<SubscriberOptions, Message>(
     "/MessageStore/Subscribe",
     serialize,
@@ -124,10 +123,15 @@ export function subscribe<T, Ctx>(
     // If its' the keep alive.
     if ("ok" in msg) {
       const date = new Date(msg.time ?? new Date().valueOf());
-      console.log('Keep alive', msg, subscriberId, date, options.onKeepAlive)
       options.onKeepAlive != null && options.onKeepAlive(subscriberId, date);
       return;
     }
+
+    count++;
+
+    // Update the stats.
+    options.onStatsUpdated != null &&
+      options.onStatsUpdated(subscriberId, { count });
 
     promise = promise
       .then(() => {
@@ -192,4 +196,4 @@ import { v4 } from "uuid";
 export { Message, ServiceDefinition, EventDefinition, CommandDefinition };
 export { testUtils };
 export { getTypescriptDefinition } from "./definition";
-export { createEndpoint } from './endpoint'
+export { createEndpoint } from "./endpoint";
