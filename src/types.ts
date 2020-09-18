@@ -51,6 +51,7 @@ export interface SubscriberOptions {
   consumerGroupMember?: number;
   positionUpdateInterval?: number;
   idleUpdateInterval?: number;
+  onKeepAlive?: (subscriberId: string, date: Date) => void;
 }
 export interface ProjectorOptions {
   streamName: string;

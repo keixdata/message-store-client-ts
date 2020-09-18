@@ -21,15 +21,17 @@
   },
   "homepage": "https://github.com/keixdata/message-store-client-ts#readme",
   "dependencies": {
-    "@grpc/grpc-js": "^1.1.6",
+    "@grpc/grpc-js": "^1.1.7",
+    "express": "^4.17.1",
+    "json-schema-to-typescript": "^9.1.1",
     "lodash": "^4.17.20",
     "msgpack5": "^4.2.1",
     "uuid": "^8.3.0",
-    "json-schema-to-typescript": "^9.1.1",
     "wait-for-expect": "^3.0.2"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.13",
+    "@types/express": "^4.17.8",
+    "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.161",
     "@types/msgpack5": "^3.4.1",
     "@types/uuid": "^8.3.0",

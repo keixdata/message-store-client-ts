@@ -22,14 +22,14 @@ const host = process.env.HOST ?? `0.0.0.0:${port}`;
 const client = new Client(host, credentials.createInsecure());
 
 function promisify<T>(
-  ...args: [string, (opb: {}) => Buffer, (buf: Buffer) => {}, {}, null, null]
+  ...args: [string, (opb: {}) => Buffer, (buf: Buffer) => {}, {}]
 ): Promise<T> {
   return new Promise(function (resolve, reject) {
-    const [a, b, c, d, e, f] = args;
+    const [a, b, c, d] = args;
     const callback = (err: Error, res: T) =>
       err != null ? reject(err) : resolve(res);
 
-    client.makeUnaryRequest(a, b, c, d, e, f, callback);
+    client.makeUnaryRequest(a, b, c, d, callback);
   });
 }
 
@@ -41,9 +41,7 @@ export async function sendCommand<
     "/MessageStore/SendCommand",
     serialize,
     deserialize,
-    options,
-    null,
-    null
+    options
   ).then((res: any) => ({
     streamName: res.stream_name,
     globalPosition: res.global_position,
@@ -59,9 +57,7 @@ export async function registerService(
     "/MessageStore/RegisterService",
     serialize,
     deserialize,
-    service,
-    null,
-    null
+    service
   );
 }
 export async function getService(name: string): Promise<boolean> {
@@ -69,9 +65,7 @@ export async function getService(name: string): Promise<boolean> {
     "/MessageStore/GetService",
     serialize,
     deserialize,
-    { name },
-    null,
-    null
+    { name }
   );
 }
 export async function retrieveServices(): Promise<boolean> {
@@ -79,9 +73,7 @@ export async function retrieveServices(): Promise<boolean> {
     "/MessageStore/RetrieveServices",
     serialize,
     deserialize,
-    {},
-    null,
-    null
+    {}
   );
 }
 
@@ -92,9 +84,7 @@ export async function readLastMessage<T = Message>(
     "/MessageStore/ReadLastMessage",
     serialize,
     deserialize,
-    options,
-    null,
-    null
+    options
   );
 }
 
@@ -106,9 +96,7 @@ export async function emitEvent<
     "/MessageStore/EmitEvent",
     serialize,
     deserialize,
-    options,
-    null,
-    null
+    options
   ).then((res: any) => ({
     streamName: res.stream_name,
     globalPosition: res.global_position,
@@ -122,6 +110,8 @@ export function subscribe<T, Ctx>(
   handler: Handler<T, Ctx>,
   context?: Ctx
 ) {
+  const subscriberId = options.subscriberId ?? v4();
+  console.log('Subscribe', subscriberId, options);
   const stream = client.makeServerStreamRequest<SubscriberOptions, Message>(
     "/MessageStore/Subscribe",
     serialize,
@@ -133,7 +123,9 @@ export function subscribe<T, Ctx>(
   stream.on("data", (msg) => {
     // If its' the keep alive.
     if ("ok" in msg) {
-      console.log("Received keep alive...");
+      const date = new Date(msg.time ?? new Date().valueOf());
+      console.log('Keep alive', msg, subscriberId, date, options.onKeepAlive)
+      options.onKeepAlive != null && options.onKeepAlive(subscriberId, date);
       return;
     }
 
@@ -195,6 +187,9 @@ export async function runProjector<State, Message>(
 
 import * as testUtils from "./test_utils";
 import { Base } from "msgpack5";
+import { uniqueId } from "lodash";
+import { v4 } from "uuid";
 export { Message, ServiceDefinition, EventDefinition, CommandDefinition };
 export { testUtils };
 export { getTypescriptDefinition } from "./definition";
+export { createEndpoint } from './endpoint'
