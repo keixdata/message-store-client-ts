@@ -44,9 +44,7 @@ function isCommandStream(streamName: string) {
 }
 
 function hasSameStreamName(a: string, b: string) {
-  return (
-    a === b || a.startsWith(`${b}-`) || a.startsWith(`${b}:`)
-  )
+  return a === b || a.startsWith(`${b}-`) || a.startsWith(`${b}:`);
 }
 
 export function getStreamMessages(streamName: string): Message[] {
@@ -107,6 +105,11 @@ export function mockMessageStore() {
         stream_name: fakeStreamName,
       });
       return Promise.resolve({ streamName: fakeStreamName, position: pos });
+    },
+    createEndpoint() {
+      return {
+        listen: () => null,
+      };
     },
     emitEvent(options: EmitEventOptions) {
       const { category, id } = options;
@@ -175,7 +178,9 @@ export function mockMessageStore() {
     ) {
       let messagesList = getStreamMessages(options.streamName);
       if (options.untilPosition != null) {
-        messagesList = messagesList.filter(f => f.global_position <= options.untilPosition);
+        messagesList = messagesList.filter(
+          (f) => f.global_position <= options.untilPosition
+        );
       }
       return Promise.resolve(messagesList.reduce(reducer, initialValue));
     },
