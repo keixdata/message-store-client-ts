@@ -32,7 +32,12 @@ export function pushMessage(message: PartialMessage) {
     position: prev.length,
   };
   messages[stream_name] = [...prev, nextMessage];
-  return nextMessage.global_position;
+  return {
+    global_position: nextMessage.global_position,
+    position: nextMessage.position,
+    time: nextMessage.time,
+    stream_name: stream_name,
+  };
 }
 
 function isCategoryStream(streamName: string) {
@@ -97,14 +102,14 @@ export function mockMessageStore() {
     sendCommand(options: SendCommandOptions) {
       const { category, id } = options;
       const fakeStreamName = `${category}:command-${id}`;
-      const pos = pushMessage({
+      const response = pushMessage({
         ...options,
         data: options.data ?? {},
         metadata: options.metadata ?? { traceId: v4() },
         type: options.command,
         stream_name: fakeStreamName,
       });
-      return Promise.resolve({ streamName: fakeStreamName, position: pos });
+      return Promise.resolve(response);
     },
     createEndpoint() {
       return {
@@ -114,14 +119,14 @@ export function mockMessageStore() {
     emitEvent(options: EmitEventOptions) {
       const { category, id } = options;
       const fakeStreamName = `${category}-${id}`;
-      const pos = pushMessage({
+      const response = pushMessage({
         ...options,
         data: options.data ?? {},
         metadata: options.metadata ?? { traceId: v4() },
         type: options.event,
         stream_name: fakeStreamName,
       });
-      return Promise.resolve({ streamName: fakeStreamName, position: pos });
+      return Promise.resolve(response);
     },
     subscribe(
       options: SubscriberOptions,
