@@ -14,6 +14,7 @@ import {
   PublishResponse,
   BaseMetadata,
   ServiceDefinition,
+  ReadMessageAtPositionOptions,
 } from "./types";
 
 const port = process.env.PORT ?? "8080";
@@ -85,7 +86,7 @@ export async function readLastMessage<T = Message>(
   );
 }
 export async function readMessageAtPosition<T = Message>(
-  options: ReadLastMessageOptions
+  options: ReadMessageAtPositionOptions
 ): Promise<T> {
   return promisify(
     "/MessageStore/ReadMessageAtPosition",
