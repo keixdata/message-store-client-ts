@@ -12,6 +12,10 @@ export interface SendCommandOptions<
   id?: string;
   expectedVersion?: number;
 }
+export interface ReadMessageAtPositionOptions {
+  globalPosition: number;
+}
+
 export interface EmitEventOptions<
   Data = {},
   Metadata extends BaseMetadata = BaseMetadata

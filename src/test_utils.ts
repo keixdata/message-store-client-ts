@@ -8,6 +8,7 @@ import {
   Projector,
   BaseMetadata,
   ReadLastMessageOptions,
+  ReadMessageAtPositionOptions,
 } from "./types";
 import { v4 } from "uuid";
 import { map, flatten, sortBy, startsWith } from "lodash";
@@ -33,10 +34,10 @@ export function pushMessage(message: PartialMessage) {
   };
   messages[stream_name] = [...prev, nextMessage];
   return {
-    global_position: nextMessage.global_position,
+    globalPosition: nextMessage.global_position,
     position: nextMessage.position,
     time: nextMessage.time,
-    stream_name: stream_name,
+    streamName: stream_name,
   };
 }
 
@@ -115,6 +116,9 @@ export function mockMessageStore() {
       return {
         listen: () => null,
       };
+    },
+    readMessageAtOptions(options: ReadMessageAtPositionOptions) {
+      return Promise.resolve(messages[options.globalPosition]);
     },
     emitEvent(options: EmitEventOptions) {
       const { category, id } = options;

@@ -84,6 +84,16 @@ export async function readLastMessage<T = Message>(
     options
   );
 }
+export async function readMessageAtPosition<T = Message>(
+  options: ReadLastMessageOptions
+): Promise<T> {
+  return promisify(
+    "/MessageStore/ReadMessageAtPosition",
+    serialize,
+    deserialize,
+    options
+  );
+}
 
 export async function emitEvent<
   Data = {},
