@@ -15,6 +15,7 @@ import {
   BaseMetadata,
   ServiceDefinition,
   ReadMessageAtPositionOptions,
+  PublishOptions,
 } from "./types";
 
 const port = process.env.PORT ?? "8080";
@@ -34,6 +35,22 @@ function promisify<T>(
   });
 }
 
+export async function publish<
+  Data = {},
+  Metadata extends BaseMetadata = BaseMetadata
+>(options: PublishOptions<Data, Metadata>): Promise<PublishResponse> {
+  return promisify(
+    "/MessageStore/Publish",
+    serialize,
+    deserialize,
+    options
+  ).then((res: any) => ({
+    streamName: res.stream_name,
+    globalPosition: res.global_position,
+    time: res.time,
+    position: res.position,
+  }));
+}
 export async function sendCommand<
   Data = {},
   Metadata extends BaseMetadata = BaseMetadata

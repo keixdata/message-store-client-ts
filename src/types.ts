@@ -1,6 +1,17 @@
 import { Base } from "msgpack5";
 import { JSONSchema } from "json-schema-to-typescript";
 
+export interface PublishOptions<
+  Data = {},
+  Metadata extends BaseMetadata = BaseMetadata
+> {
+  type: string;
+  category: string;
+  data?: Data;
+  metadata?: Metadata;
+  id?: string;
+  expectedVersion?: number;
+}
 export interface SendCommandOptions<
   Data = {},
   Metadata extends BaseMetadata = BaseMetadata
