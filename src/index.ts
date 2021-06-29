@@ -139,12 +139,14 @@ export function subscribe<T, Ctx>(
   let count = 0;
 
   console.log("Subscribe", subscriberId, options);
-  const stream = client.makeServerStreamRequest<SubscriberOptions, Message>(
-    "/MessageStore/Subscribe",
+  const stream = client.makeBidiStreamRequest<"ok" | SubscriberOptions, Message>(
+    "/MessageStore/SubscribeAsync",
     serialize,
-    deserialize,
-    options
+    deserialize
   );
+
+  // Write the options.
+  stream.write(options);
 
   let promise = Promise.resolve();
   stream.on("data", (msg) => {
@@ -176,6 +178,11 @@ export function subscribe<T, Ctx>(
         );
         console.error(err);
         return Promise.resolve();
+      })
+      .finally(() => {
+
+        // Write ok.
+        stream.write("ok");
       });
   });
 
