@@ -33,12 +33,14 @@ test("the mocked message store adds messages to the streams and calculate the po
   expect(messages[1].id).not.toBeUndefined();
   expect(messages[1].global_position).toEqual(1);
   expect(messages[1].position).toEqual(1);
+  expect(messages[1].metadata.traceId).not.toBeNull();
 
   messages = getStreamMessages("example-abc");
   expect(messages).toHaveLength(1);
   expect(messages[0].id).not.toBeUndefined();
   expect(messages[0].global_position).toEqual(2);
   expect(messages[0].position).toEqual(0);
+  expect(messages[0].metadata.traceId).not.toBeNull();
 });
 
 test("the mocked message store should allow to project events", async () => {
@@ -179,3 +181,57 @@ it("should not receive a message with same prefixes", async () => {
   });
   unsubscribe();
 });
+
+// it("should protect from idempotence", async () => {
+//   setupMessageStore([
+//     {
+//       stream_name: "example-abc",
+//       type: "EMAIL_SENT",
+//       data: {},
+//       metadata: { traceId: "def" },
+//     },
+//     {
+//       stream_name: "example-abc",
+//       type: "EMAIL_SENT",
+//       data: {},
+//       metadata: { traceId: "ter" },
+//     },
+//   ]);
+
+//   expect(
+//     await isLastMessageAfterGlobalPosition("example-abc", {
+//       global_position: 2,
+//       position: 0,
+//       stream_name: "example:command-abc",
+//       data: {},
+//       id: "abc",
+//       metadata: { traceId: "abc" },
+//       time: new Date(),
+//       type: "SAY_HELLO",
+//     })
+//   ).toBeFalsy();
+//   expect(
+//     await isLastMessageAfterGlobalPosition("example-abc", {
+//       global_position: 1,
+//       position: 0,
+//       stream_name: "example:command-abc",
+//       data: {},
+//       id: "abc",
+//       metadata: { traceId: "ter" },
+//       time: new Date(),
+//       type: "SAY_HELLO",
+//     })
+//   ).toBeFalsy();
+//   expect(
+//     await isLastMessageAfterGlobalPosition("example-abc", {
+//       global_position: 1,
+//       position: 0,
+//       stream_name: "example:command-abc",
+//       data: {},
+//       id: "abc",
+//       metadata: { traceId: "tttt" },
+//       time: new Date(),
+//       type: "SAY_HELLO",
+//     })
+//   ).toBeTruthy();
+// });

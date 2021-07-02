@@ -1,6 +1,6 @@
 {
   "name": "@keix/message-store-client",
-  "version": "1.2.6",
+  "version": "1.3.1-beta1",
   "description": "An Message Store client typescript implementation using gRPC",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
@@ -21,22 +21,22 @@
   },
   "homepage": "https://github.com/keixdata/message-store-client-ts#readme",
   "dependencies": {
-    "@grpc/grpc-js": "^1.1.7",
+    "@grpc/grpc-js": "^1.3.4",
     "express": "^4.17.1",
     "json-schema-to-typescript": "^9.1.1",
-    "lodash": "^4.17.20",
-    "msgpack5": "^4.2.1",
-    "uuid": "^8.3.0",
+    "lodash": "^4.17.21",
+    "msgpack5": "^3.6.1",
+    "uuid": "^8.3.2",
     "wait-for-expect": "^3.0.2"
   },
   "devDependencies": {
-    "@types/express": "^4.17.8",
-    "@types/jest": "^26.0.14",
-    "@types/lodash": "^4.14.161",
+    "@types/express": "^4.17.12",
+    "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.170",
     "@types/msgpack5": "^3.4.1",
     "@types/uuid": "^8.3.0",
-    "jest": "^26.4.2",
-    "ts-jest": "^26.3.0",
-    "typescript": "^4.0.2"
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.5"
   }
 }

@@ -31,6 +31,7 @@ export function pushMessage(message: PartialMessage) {
     id: v4(),
     global_position: globalPosition++,
     position: prev.length,
+    metadata: message.metadata ?? { traceId: v4() },
   };
   messages[stream_name] = [...prev, nextMessage];
   return {

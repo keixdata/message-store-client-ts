@@ -217,6 +217,36 @@ export async function runProjector<State, Message>(
   });
 }
 
+export async function isLastMessageAfterGlobalPosition(
+  streamName: string,
+  command: Message
+) {
+  const { global_position, metadata } = command;
+  const { traceId } = metadata;
+  const lastMsg = await readLastMessage({
+    streamName,
+  });
+  if (lastMsg) {
+    // If the global position is behind the command, that we're good to go.
+    if (lastMsg.global_position < global_position) {
+      return false;
+    }
+
+    // Otherwise it's not easy to say that this command is already processed. We then use the traceid.
+    return await runProjector(
+      { streamName },
+      (prev, next: Message) => {
+        if (next.metadata.traceId === traceId) {
+          return true;
+        }
+        return prev;
+      },
+      false
+    );
+  }
+  return false;
+}
+
 import * as testUtils from "./test_utils";
 import { Base } from "msgpack5";
 import { uniqueId } from "lodash";
