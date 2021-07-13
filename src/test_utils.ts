@@ -9,6 +9,7 @@ import {
   BaseMetadata,
   ReadLastMessageOptions,
   ReadMessageAtPositionOptions,
+  SynchronizePositionOptions,
 } from "./types";
 import { v4 } from "uuid";
 import { map, flatten, sortBy, startsWith } from "lodash";
@@ -181,6 +182,10 @@ export function mockMessageStore() {
         messages.length > 0 ? messages[messages.length - 1] : null
       );
     },
+    synchronizePosition(options: SynchronizePositionOptions) {
+      return Promise.resolve(true);
+    },
+
     runProjector(
       options: ProjectorOptions,
       reducer: Projector<any, any>,

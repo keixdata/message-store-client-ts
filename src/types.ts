@@ -12,6 +12,13 @@ export interface PublishOptions<
   id?: string;
   expectedVersion?: number;
 }
+
+export interface SynchronizePositionOptions {
+  syncId: string;
+  position: number;
+  subscriberId: string;
+}
+
 export interface SendCommandOptions<
   Data = {},
   Metadata extends BaseMetadata = BaseMetadata

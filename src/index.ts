@@ -1,4 +1,4 @@
-import { Client, credentials } from "@grpc/grpc-js";
+import { Client, credentials } from "grpc";
 import { serialize, deserialize } from "./utils";
 import {
   SendCommandOptions,
@@ -16,6 +16,7 @@ import {
   ServiceDefinition,
   ReadMessageAtPositionOptions,
   PublishOptions,
+  SynchronizePositionOptions,
 } from "./types";
 
 const port = process.env.PORT ?? "8080";
@@ -31,7 +32,7 @@ function promisify<T>(
     const callback = (err: Error, res: T) =>
       err != null ? reject(err) : resolve(res);
 
-    client.makeUnaryRequest(a, b, c, d, callback);
+    client.makeUnaryRequest(a, b, c, d, null, null, callback);
   });
 }
 
@@ -139,17 +140,22 @@ export function subscribe<T, Ctx>(
   let count = 0;
 
   console.log("Subscribe", subscriberId, options);
-  const stream = client.makeBidiStreamRequest<"ok" | SubscriberOptions, Message>(
-    "/MessageStore/SubscribeAsync",
-    serialize,
-    deserialize
-  );
+  const stream = client.makeBidiStreamRequest<
+    "ok" | "error" | SubscriberOptions,
+    Message
+  >("/MessageStore/SubscribeAsync", serialize, deserialize);
 
   // Write the options.
   stream.write(options);
 
   let promise = Promise.resolve();
+  let error = false;
+
   stream.on("data", (msg) => {
+    if (error) {
+      return;
+    }
+
     // If its' the keep alive.
     if ("ok" in msg) {
       const date = new Date(msg.time ?? new Date().valueOf());
@@ -172,17 +178,19 @@ export function subscribe<T, Ctx>(
           return Promise.resolve();
         }
       })
-      .catch((err) => {
-        console.error(
-          "Catched an error in a subscriber, enabling fail safe..."
-        );
-        console.error(err);
-        return Promise.resolve();
-      })
-      .finally(() => {
-
+      .then(() => {
         // Write ok.
         stream.write("ok");
+      })
+      .catch((err) => {
+        error = true;
+        console.error("Catched an error in a subscriber, exiting...");
+        console.error(err);
+        stream.write("error");
+        setTimeout(() => {
+          stream.cancel();
+          process.exit(-1);
+        }, 2000);
       });
   });
 
@@ -196,6 +204,18 @@ export function combineSubscriber(...args: (() => void)[]) {
   return () => {
     args.forEach((close) => close());
   };
+}
+
+export async function synchronizePosition(options: SynchronizePositionOptions) {
+  const stream = client.makeServerStreamRequest<
+    SynchronizePositionOptions,
+    "ok"
+  >("/MessageStore/SynchronizePosition", serialize, deserialize, options);
+  return new Promise((resolve) => {
+    stream.on("data", (msg: "ok") => {
+      resolve(true);
+    });
+  });
 }
 
 export async function runProjector<State, Message>(
